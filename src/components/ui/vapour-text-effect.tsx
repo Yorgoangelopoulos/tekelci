@@ -112,7 +112,6 @@ export default function VaporizeTextCycle({
   const vaporizeProgressRef = useRef(0);
   const fadeOpacityRef = useRef(0);
   const [wrapperSize, setWrapperSize] = useState({ width: 0, height: 0 });
-  const transformedDensity = transformValue(density, [0, 10], [0.3, 1], true);
 
   // Calculate device pixel ratio
   const globalDpr = useMemo(() => {
@@ -157,6 +156,7 @@ export default function VaporizeTextCycle({
 
   // Memoize particle update function
   const memoizedUpdateParticles = useCallback((particles: Particle[], vaporizeX: number, deltaTime: number) => {
+    const transformedDensity = transformValue(density, [0, 10], [0.3, 1], true);
     return updateParticles(
       particles,
       vaporizeX,
@@ -166,7 +166,7 @@ export default function VaporizeTextCycle({
       direction,
       transformedDensity
     );
-  }, [fontConfig.MULTIPLIED_VAPORIZE_SPREAD, animationDurations.VAPORIZE_DURATION, direction, transformedDensity]);
+  }, [fontConfig.MULTIPLIED_VAPORIZE_SPREAD, animationDurations.VAPORIZE_DURATION, direction, density]);
 
   // Memoize render function
   const memoizedRenderParticles = useCallback((ctx: CanvasRenderingContext2D, particles: Particle[]) => {
@@ -322,7 +322,6 @@ export default function VaporizeTextCycle({
       particlesRef,
       globalDpr,
       currentTextIndex,
-      transformedDensity,
       framerProps: {
         texts,
         font,
@@ -330,7 +329,7 @@ export default function VaporizeTextCycle({
         alignment,
       },
     });
-  }, [texts, font, color, alignment, wrapperSize, currentTextIndex, globalDpr, transformedDensity]);
+  }, [texts, font, color, alignment, wrapperSize, currentTextIndex, globalDpr]);
 
   // Handle resize
   useEffect(() => {
@@ -413,7 +412,6 @@ const handleFontChange = ({
   particlesRef,
   globalDpr,
   currentTextIndex,
-  transformedDensity,
   framerProps,
 }: {
   currentFont: string;
@@ -423,7 +421,6 @@ const handleFontChange = ({
   particlesRef: React.MutableRefObject<Particle[]>;
   globalDpr: number;
   currentTextIndex: number;
-  transformedDensity: number;
   framerProps: VaporizeTextCycleProps;
 }) => {
   if (currentFont !== lastFontRef.current) {
