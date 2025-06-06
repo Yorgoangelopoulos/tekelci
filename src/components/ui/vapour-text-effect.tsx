@@ -311,7 +311,6 @@ export default function VaporizeTextCycle({
       particlesRef,
       globalDpr,
       currentTextIndex,
-      transformedDensity,
     });
 
     const currentFont = font.fontFamily || "sans-serif";
@@ -356,7 +355,6 @@ export default function VaporizeTextCycle({
         particlesRef,
         globalDpr,
         currentTextIndex,
-        transformedDensity,
       });
     });
 
@@ -388,7 +386,7 @@ export default function VaporizeTextCycle({
 // ------------------------------------------------------------ //
 // SEO ELEMENT
 // ------------------------------------------------------------ //
-const SeoElement = memo(({ tag = Tag.P, texts }: { tag: Tag, texts: string[] }) => {
+const SeoElement = memo(function SeoElement({ tag = Tag.P, texts }: { tag: Tag, texts: string[] }) {
   const style = useMemo(() => ({
     position: "absolute" as const,
     width: "0",
@@ -441,7 +439,6 @@ const handleFontChange = ({
         particlesRef,
         globalDpr,
         currentTextIndex,
-        transformedDensity,
       });
     }, 1000);
     
@@ -482,7 +479,6 @@ const renderCanvas = ({
   particlesRef,
   globalDpr,
   currentTextIndex,
-  transformedDensity,
 }: {
   framerProps: VaporizeTextCycleProps;
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -490,7 +486,6 @@ const renderCanvas = ({
   particlesRef: React.MutableRefObject<Particle[]>;
   globalDpr: number;
   currentTextIndex: number;
-  transformedDensity: number;
 }) => {
   const canvas = canvasRef.current;
   if (!canvas || !wrapperSize.width || !wrapperSize.height) return;
@@ -559,11 +554,11 @@ const createParticles = (
   ctx.imageSmoothingEnabled = true;
   
   if ('fontKerning' in ctx) {
-    (ctx as any).fontKerning = "normal";
+    (ctx as CanvasRenderingContext2D & { fontKerning?: string }).fontKerning = "normal";
   }
   
   if ('textRendering' in ctx) {
-    (ctx as any).textRendering = "geometricPrecision";
+    (ctx as CanvasRenderingContext2D & { textRendering?: string }).textRendering = "geometricPrecision";
   }
 
   // Calculate text boundaries
@@ -793,11 +788,11 @@ const parseColor = (color: string) => {
   
   if (rgbaMatch) {
     // If RGBA format
-    const [_, r, g, b, a] = rgbaMatch;
+    const [, r, g, b, a] = rgbaMatch;
     return `rgba(${r}, ${g}, ${b}, ${a})`;
   } else if (rgbMatch) {
     // If RGB format
-    const [_, r, g, b] = rgbMatch;
+    const [, r, g, b] = rgbMatch;
     return `rgba(${r}, ${g}, ${b}, 1)`;
   }
   
